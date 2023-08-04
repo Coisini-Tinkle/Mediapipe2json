@@ -1,0 +1,7 @@
+标好的数据集/
+input/
+output/
+reference/
+utils/__pycache__/__init__.cpython-310.pyc
+utils/__pycache__/labelme2data.cpython-310.pyc
+utils/__pycache__/trial.cpython-310.pyc
