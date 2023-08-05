@@ -1,17 +1,17 @@
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-import json
+import json as js
 import cv2
 import os
 
-def mediaPipe_result2json(image_file, json_file, image_id, num_hands=5):
+def mediaPipe_result2json(image_file, json_folder, image_id, num_hands=5):
     """Input an image file ,use mediapipe hand model to detect the keypoints of hand, 
     then convert the result to a standard json file.(Please refer to readme.md)
 
     Args:
         image_file (str): image file path
-        json_file (str): the path to save json file
+        json_folder (str): the path to save json file
         image_id (int): the index of image
         num_hands (int, optional): the maximum number of hands in one image. Defaults to 5.
     """
@@ -60,15 +60,15 @@ def mediaPipe_result2json(image_file, json_file, image_id, num_hands=5):
         "keypoints": keypoints_dict_list
     }
 
-    with open(json_file+f"{image_id:0>8d}.json","w") as f:
-        json.dump(data,f)
+    with open(json_folder+f"{image_id:0>4d}.json","w") as f:
+        js.dump(data,f)
         print("A json file has been created!")
 
 
 def json_visualize(json_file, image_file, image_output, image_id):
     img = cv2.imread(image_file)
     with open(json_file) as f:
-        data = json.load(f)
+        data = js.load(f)
         width = data['image_info']['w']
         height = data['image_info']['h']
         hands = data['keypoints']
@@ -86,12 +86,12 @@ def json_visualize(json_file, image_file, image_output, image_id):
     print('A image file has been created!')
 
 
-def json_visualize2(json_file,image_file,image_output,image_id):
+def json_visualize2(file,image_file,image_output_folder,image_id):
     """Input a json file and visualize it.
 
     Args:
         image_file (str): image file path
-        json_file (str): json file path
+        file (str): json file path
         image_id (int): the index of image
     """
     left_color1 = (255,165,0)
@@ -117,8 +117,8 @@ def json_visualize2(json_file,image_file,image_output,image_id):
     right_color = (right_color1,right_color2,right_color3,right_color4,right_color5)
 
     img = cv2.imread(image_file)
-    with open(json_file) as f:
-        data = json.load(f)
+    with open(file) as f:
+        data = js.load(f)
         width = data['image_info']['w']
         height = data['image_info']['h']
         hands = data['keypoints']
@@ -149,11 +149,19 @@ def json_visualize2(json_file,image_file,image_output,image_id):
             cv2.putText(img,hands[hand_order]['hand_type'],(int(point_text[0]*width),int(point_text[1]*height)),font, 0.5, (0, 255, 255), 1)
 
 
-    cv2.imwrite(image_output + f'{image_id:0>4d}.png', img)
+    cv2.imwrite(image_output_folder + f'{image_id:0>4d}.png', img)
     print('A image file has been created!')
 
 if __name__ == '__main__':
-    # mediaPipe_result2json(image_file=r"image/000007.jpg", json_file=r"outputjson/", image_id=1)
-    # json_visualize(json_file=r"outputjson/00000001.json",image_file=r"image/000007.jpg",image_output=r'outputimg/',image_id=1)
-    # json_visualize2(json_file=r"outputjson/00000001.json",image_file=r"image/images/0001.png",image_output=r'test_try/',image_id=1)
+    # 可视化代码
+    index=1
+    dataset_json_list=os.listdir(r"F:/Code/Mediapipe2json/dataset/")
+    img_list=os.listdir(r"F:/Code/Mediapipe2json/data/image/")
+    for img,json in zip(img_list,dataset_json_list):
+        json_visualize2(
+            file="F:/Code/Mediapipe2json/dataset/"+json,
+            image_file="F:/Code/Mediapipe2json/data/image/"+img,
+            image_output_folder="F:/Code/Mediapipe2json/visualize/",
+            image_id=index)
+        index+=1
     pass

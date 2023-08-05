@@ -10,22 +10,26 @@
 
 ```
 ├─model
-├─input
-├─output
+├─data
+├─dataset
+├─mediapipe
+├─labelme
 ├─utils
    ├─__init__.py
    ├─mediapipe2data.py
    ├─labelme2data.py
 ├─demo.ipynb
+├─visualize.ipynb
 └─readme.md
 ```
 
-1. image文件夹存放测试图片
-2. model文件夹存放MediaPipe测试模型
-3. mediapipe2data.py文件可以转换mediapipe的输出
-4. labelme2data.py文件可以转换labelme的输出
-5. demo.ipynb展示代码用法
-6. 为了代码的简洁，并未上传input，output文件夹
+1. data文件夹存放测试图片
+2. dataset文件夹存放整合好的数据集json文件
+3. model文件夹存放MediaPipe测试模型
+4. mediapipe存放mediapipe的输出
+5. labelme存放labelme的输出
+6. demo.ipynb展示
+7. visualize.ipynb展示了怎么对一个文件夹的图片进行可视化
 
 ---
 
@@ -39,6 +43,6 @@
 
 * `hand_keypoints`保存关键点的坐标 `<x,y>`。注意此处的坐标是归一化之后的坐标，以像素为单位。
 * `hand_score`中是手的置信度。
-* `hand_type`标志着是左手还是右手。
+* `hand_type`标志着是左手 `Left`还是右手 `Right`。
 
   ![1690979196634](.readme/1690979196634.png)

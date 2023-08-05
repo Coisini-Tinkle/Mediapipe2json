@@ -48,12 +48,12 @@ label_index_array=np.array(
     ]
 )
 
-def labelme2owndata(labelme_json_file,output_json_file,index:int):
+def labelme2owndata(labelme_json_file,output_json_folder,index:int):
     """This is function is used to convert labelme's result json file to standard json file(refer to readme.md)
 
     Args:
         labelme_json_file (str): the path of labelme's result json file
-        output_json_file (str): the file to save output
+        output_json_folder (str): the folder to save output
         index (int): the index of json file ,which is equal to the index of image
     """
     with open(labelme_json_file) as f:
@@ -68,11 +68,11 @@ def labelme2owndata(labelme_json_file,output_json_file,index:int):
         if flag<=20:
             # print(d['points'][0][0])
             # print(d['points'][0][1])
-            left_hand_array[flag][0]=d['points'][0][0]
-            left_hand_array[flag][1]=d['points'][0][1]
+            left_hand_array[flag][0]=d['points'][0][0]/w
+            left_hand_array[flag][1]=d['points'][0][1]/h
         else:
-            right_hand_array[flag-21][0]=d['points'][0][0]
-            right_hand_array[flag-21][1]=d['points'][0][1]
+            right_hand_array[flag-21][0]=d['points'][0][0]/w
+            right_hand_array[flag-21][1]=d['points'][0][1]/h
 
     #json格式标准
     json_standard= \
@@ -91,11 +91,11 @@ def labelme2owndata(labelme_json_file,output_json_file,index:int):
                 {
                     "hand_keypoints": eval(hand + "_hand_array").tolist(),
                     "hand_score":1,
-                    "hand_type":"left"
+                    "hand_type":hand
                 }
             )
 
-    with open(output_json_file+f"/{index:0>4d}.json","w") as f:
+    with open(output_json_folder+f"/{index:0>4d}.json","w") as f:
         json.dump(json_standard,f)
 
 
@@ -119,11 +119,28 @@ def json_change_left_right(json_file_folder,index:int):
     with open(json_file_folder+f"{index_str}.json","w") as ff:
         json.dump(json_data,ff)
 
+def handtype_case_conversion(json_file):
+    """Change the handtype in particular json file
+
+    Args:
+        json_file (str): the path of json file
+    """
+    with open(json_file) as f:
+        data=json.load(f)
+    for key in data['keypoints']:
+        if key['hand_type'] in ["Left","left"]:
+            key['hand_type']="Right"
+        elif key['hand_type'] in ["Right","right"]:
+            key['hand_type']="Left"
+    with open(json_file,"w") as d:
+        json.dump(data,d)
+
 if __name__=='__main__':
-    # labelme2owndata(
-    #     labelme_json_file=r"F:\Code\Mediapipe2json\labelmejson\0878.json",
-    #     output_json_file=r"F:\Code\Mediapipe2json\labelmejsonoutput",
-    #     index=878
-    # )
-    json_change_left_right(json_file_folder=r"F:\Code\Mediapipe2json\output\labelmejson",index=1596)
+    labelme2owndata(
+        labelme_json_file=r"F:/Code/Mediapipe2json/labelme/oringinal_labelme_json/2880.json",
+        output_json_folder=r"F:/Code/Mediapipe2json/",
+        index=2880
+    )
+    # json_change_left_right(json_file_folder=r"F:\Code\Mediapipe2json\output\labelmejson",index=1596)
+    # handtype_case_conversion(json_file=r"C:/Users/ZhangYao/Desktop/0001.json")
     print("This main function is just for debug!")
